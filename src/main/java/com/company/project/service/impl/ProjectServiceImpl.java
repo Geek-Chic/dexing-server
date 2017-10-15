@@ -47,9 +47,15 @@ public class ProjectServiceImpl extends AbstractService<Project> implements Proj
     @Override
     public List<ProjectAreComponent> findArea() {
         List<Project> allProjects = findAll();
-        ArrayListMultimap<String, Project> map = ArrayListMultimap.create();
+        Map<String, List<Project>> map = new HashMap<>();
         for (Project project : allProjects) {
-            map.put(project.getArea(), project);
+            if (map.containsKey(project.getArea())) {
+                map.get(project.getArea()).add(project);
+            } else {
+                List<Project> projects = new ArrayList<Project>();
+                projects.add(project);
+                map.put(project.getArea(), projects);
+            }
         }
         List<ProjectAreComponent> area = new ArrayList<ProjectAreComponent>();
         for (String key : map.keySet()) {
