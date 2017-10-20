@@ -38,6 +38,11 @@ public class ProjectServiceImpl extends AbstractService<Project> implements Proj
     private AreaService areaService;
 
     @Override
+    public void addProject(Project project) {
+         projectMapper.insertProject(project);
+    }
+
+    @Override
     public List<Project> findIndex() {
         Example example = new Example(Project.class);
         example.createCriteria().andEqualTo("isTop", 1);

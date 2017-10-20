@@ -11,6 +11,8 @@ import java.util.List;
  */
 public interface ProjectService extends Service<Project> {
 
+    void addProject(Project project);
+
     List<Project> findIndex();
 
     List<ProjectAreComponent> findArea();

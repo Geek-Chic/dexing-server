@@ -26,7 +26,7 @@ public class BackendController {
 
     @PostMapping("/add")
     public Result add(Project project) {
-        projectService.save(project);
+        projectService.addProject(project);
         return ResultGenerator.genSuccessResult();
     }
 
