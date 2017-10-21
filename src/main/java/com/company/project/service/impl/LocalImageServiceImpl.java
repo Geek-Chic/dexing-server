@@ -15,6 +15,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.Buffer;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Map;
 
@@ -39,7 +40,9 @@ public class LocalImageServiceImpl implements ImageService {
                 fileType = fileName.substring(fileName.lastIndexOf(".") + 1, fileName.length());
                 String imagePath = Paths.get(uploadImageRoot, trueFileName).toString();
                 try {
-                    file.transferTo(new File(imagePath));
+//                    file.transferTo(new File(imagePath));
+                    BufferedImage bImg = ImageIO.read(file.getInputStream());
+                    ImageIO.write(bImg, "jpg", new File(imagePath));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -51,32 +54,29 @@ public class LocalImageServiceImpl implements ImageService {
     @Override
     public BufferedImage getBufferedImage(String md5, ImageHandleData imageHandleData) {
         String path = Paths.get(uploadImageRoot, md5).toString();
-        ImagePlus imagePlus = IJ.openImage(path);
-        BufferedImage bufferedImage = imagePlus.getBufferedImage();
         if (null != imageHandleData.getHeight() || null != imageHandleData.getWidth()) {
             try {
-                int width = null != imageHandleData.getWidth() ? imageHandleData.getWidth() : imagePlus.getWidth();
-                int height = null != imageHandleData.getHeight() ? imageHandleData.getHeight() : imagePlus.getHeight();
-                bufferedImage = cropAndResize(imagePlus, width, height);
+                return getThumbnail(md5, imageHandleData.getWidth(), imageHandleData.getHeight());
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-        return bufferedImage;
-//        InputStream is = null;
-//        try {
-//            is = new FileInputStream(path);
-//            BufferedImage img = ImageIO.read(is);
-//            return img;
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        File file = new File(path);
+        if (!file.exists()) {
+            return null;
+        }
+        try {
+            return ImageIO.read(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
-    public BufferedImage cropAndResize(ImagePlus imp, int targetWidth, int targetHeight) throws Exception {
+    public BufferedImage cropAndResize(ImagePlus imp, Integer targetWidth, Integer targetHeight) throws Exception {
         ImageProcessor ip = imp.getProcessor();
+        targetWidth = null != targetWidth ? targetWidth : ip.getWidth();
+        targetHeight = null != targetHeight ? targetHeight : ip.getHeight();
         ip.setInterpolationMethod(ImageProcessor.BILINEAR);
         ip = ip.resize(targetWidth * 2, targetHeight * 2);
 
@@ -85,9 +85,19 @@ public class LocalImageServiceImpl implements ImageService {
         ip.setRoi(cropX, cropY, targetWidth, targetHeight);
         ImageProcessor cropped = ip.crop();
         BufferedImage croppedImage = ip.getBufferedImage();
-//        new ImagePlus("croppedImage", croppedImage).show();
-//        String thumbFilePaht=Paths.get(uploadImageRoot,"thumbnail",).toString();
-//        ImageIO.write(croppedImage, "jpg", new File("cropped.jpg"));
         return croppedImage;
+    }
+
+    private BufferedImage getThumbnail(String md5, int targetWidth, int targetHeight) throws Exception {
+        String path = Paths.get(uploadImageRoot, md5).toString();
+        String thumbnailPath = Paths.get(uploadImageRoot, String.format("%s@%sx%s", md5, targetWidth, targetHeight)).toString();
+        File thumbnailFile = new File(thumbnailPath);
+        if (thumbnailFile.exists()) {
+            return ImageIO.read(thumbnailFile);
+        }
+        ImagePlus imp = IJ.openImage(path);
+        BufferedImage resizeImage = cropAndResize(imp, targetWidth, targetHeight);
+        ImageIO.write(resizeImage, "jpg", new File(thumbnailPath));
+        return resizeImage;
     }
 }
