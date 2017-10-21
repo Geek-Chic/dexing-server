@@ -9,6 +9,7 @@ import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,6 +21,10 @@ import java.nio.Buffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 /**
  * Created by evil on 10/15/17.
@@ -30,6 +35,7 @@ public class LocalImageServiceImpl implements ImageService {
 
     @Value("${upload.image.root}")
     private String uploadImageRoot;
+    private static final int THREAD_POOL_SIZE = 8;
 
     @Override
     public String upload(Map<String, MultipartFile> files) {
@@ -46,14 +52,15 @@ public class LocalImageServiceImpl implements ImageService {
 //                    file.transferTo(new File(imagePath));
                     BufferedImage bImg = ImageIO.read(file.getInputStream());
                     ImageIO.write(bImg, "jpg", new File(imagePath));
-                    try {
-                        getThumbnail(trueFileName, 150, 88);
-                        getThumbnail(trueFileName, 70, 70);
-                        getThumbnail(trueFileName, 750, 440);
-
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+//                    try {
+//                        getThumbnail(trueFileName, 150, 88);
+//                        getThumbnail(trueFileName, 70, 70);
+//                        getThumbnail(trueFileName, 280, 165);
+//                        getThumbnail(trueFileName, 750, 440);
+//
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
 //                    ImgCompressUtil.tosmallerpic(bImg, imagePath, 150, 88, (float) 0.85);
 //                    ImgCompressUtil.tosmallerpic(bImg, imagePath, 70, 70, (float) 0.85);
 //                    ImgCompressUtil.tosmallerpic(bImg, imagePath, 750, 440, (float) 0.85);
@@ -62,6 +69,23 @@ public class LocalImageServiceImpl implements ImageService {
                 }
             }
         }
+        ScheduledExecutorService executorService = new ScheduledThreadPoolExecutor(4,
+                new BasicThreadFactory.Builder().namingPattern("schedule-pool-%d").daemon(true).build());
+        final String finalTrueFileName = trueFileName;
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    getThumbnail(finalTrueFileName, 150, 88);
+                    getThumbnail(finalTrueFileName, 70, 70);
+                    getThumbnail(finalTrueFileName, 280, 165);
+                    getThumbnail(finalTrueFileName, 750, 440);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
         return trueFileName;
     }
 
