@@ -6,6 +6,7 @@ import com.company.project.utils.MD5Util;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ import java.util.Map;
  * Created by evil on 10/15/17.
  */
 @Service
+@Slf4j
 public class LocalImageServiceImpl implements ImageService {
 
     @Value("${upload.image.root}")
@@ -92,12 +94,18 @@ public class LocalImageServiceImpl implements ImageService {
         String path = Paths.get(uploadImageRoot, md5).toString();
         String thumbnailPath = Paths.get(uploadImageRoot, String.format("%s@%sx%s", md5, targetWidth, targetHeight)).toString();
         File thumbnailFile = new File(thumbnailPath);
+
         if (thumbnailFile.exists()) {
+            log.info("get thumbnail:" + thumbnailPath);
             return ImageIO.read(thumbnailFile);
         }
+        log.info("get orgFile:" + path);
         ImagePlus imp = IJ.openImage(path);
-        BufferedImage resizeImage = cropAndResize(imp, targetWidth, targetHeight);
-        ImageIO.write(resizeImage, "jpg", new File(thumbnailPath));
-        return resizeImage;
+        if (null != imp) {
+            BufferedImage resizeImage = cropAndResize(imp, targetWidth, targetHeight);
+            ImageIO.write(resizeImage, "jpg", new File(thumbnailPath));
+            return resizeImage;
+        }
+        return null;
     }
 }
