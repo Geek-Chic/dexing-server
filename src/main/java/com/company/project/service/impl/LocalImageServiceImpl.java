@@ -2,6 +2,7 @@ package com.company.project.service.impl;
 
 import com.company.project.dto.ImageHandleData;
 import com.company.project.service.ImageService;
+import com.company.project.utils.ImgCompressUtil;
 import com.company.project.utils.MD5Util;
 import ij.IJ;
 import ij.ImagePlus;
@@ -45,6 +46,17 @@ public class LocalImageServiceImpl implements ImageService {
 //                    file.transferTo(new File(imagePath));
                     BufferedImage bImg = ImageIO.read(file.getInputStream());
                     ImageIO.write(bImg, "jpg", new File(imagePath));
+                    try {
+                        getThumbnail(trueFileName, 150, 88);
+                        getThumbnail(trueFileName, 70, 70);
+                        getThumbnail(trueFileName, 750, 440);
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+//                    ImgCompressUtil.tosmallerpic(bImg, imagePath, 150, 88, (float) 0.85);
+//                    ImgCompressUtil.tosmallerpic(bImg, imagePath, 70, 70, (float) 0.85);
+//                    ImgCompressUtil.tosmallerpic(bImg, imagePath, 750, 440, (float) 0.85);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
