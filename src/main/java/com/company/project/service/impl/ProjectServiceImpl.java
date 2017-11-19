@@ -16,6 +16,7 @@ import com.google.common.collect.Maps;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import tk.mybatis.mapper.entity.Condition;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Nullable;
@@ -33,20 +34,18 @@ import java.util.Map;
 @Transactional
 public class ProjectServiceImpl extends AbstractService<Project> implements ProjectService {
     @Resource
-    private ProjectMapper projectMapper;
-    @Resource
     private AreaService areaService;
 
     @Override
     public void addProject(Project project) {
-         projectMapper.insertProject(project);
+        save(project);
     }
 
     @Override
     public List<Project> findIndex() {
-        Example example = new Example(Project.class);
+        Condition example = new Condition(Project.class);
         example.createCriteria().andEqualTo("isTop", 1);
-        return projectMapper.selectByCondition(example);
+        return findByCondition(example);
     }
 
     @Override

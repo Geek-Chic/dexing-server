@@ -18,6 +18,11 @@
     <result column="group_id" jdbcType="INTEGER" property="groupId" />
     <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
     <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="location" jdbcType="VARCHAR" property="location" />
+    <result column="scale" jdbcType="VARCHAR" property="scale" />
+    <result column="situation" jdbcType="VARCHAR" property="situation" />
+    <result column="project_date" jdbcType="VARCHAR" property="projectDate" />
     <result column="images" jdbcType="LONGVARCHAR" property="images" />
   </resultMap>
   <insert id="insertProject" parameterType="com.company.project.model.Project">

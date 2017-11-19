@@ -1,8 +1,5 @@
 package com.company.project.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import org.springframework.format.annotation.DateTimeFormat;
-
 import java.util.Date;
 import javax.persistence.*;
 
@@ -40,6 +37,17 @@ public class Project {
 
     @Column(name = "gmt_modify")
     private Date gmtModify;
+
+    private String address;
+
+    private String location;
+
+    private String scale;
+
+    private String situation;
+
+    @Column(name = "project_date")
+    private String projectDate;
 
     private String images;
 
@@ -223,6 +231,76 @@ public class Project {
      */
     public void setGmtModify(Date gmtModify) {
         this.gmtModify = gmtModify;
+    }
+
+    /**
+     * @return address
+     */
+    public String getAddress() {
+        return address;
+    }
+
+    /**
+     * @param address
+     */
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    /**
+     * @return location
+     */
+    public String getLocation() {
+        return location;
+    }
+
+    /**
+     * @param location
+     */
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    /**
+     * @return scale
+     */
+    public String getScale() {
+        return scale;
+    }
+
+    /**
+     * @param scale
+     */
+    public void setScale(String scale) {
+        this.scale = scale;
+    }
+
+    /**
+     * @return situation
+     */
+    public String getSituation() {
+        return situation;
+    }
+
+    /**
+     * @param situation
+     */
+    public void setSituation(String situation) {
+        this.situation = situation;
+    }
+
+    /**
+     * @return project_date
+     */
+    public String getProjectDate() {
+        return projectDate;
+    }
+
+    /**
+     * @param projectDate
+     */
+    public void setProjectDate(String projectDate) {
+        this.projectDate = projectDate;
     }
 
     /**
