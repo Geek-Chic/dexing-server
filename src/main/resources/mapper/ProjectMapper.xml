@@ -27,12 +27,14 @@
   </resultMap>
   <insert id="insertProject" parameterType="com.company.project.model.Project">
     insert into project (name,area,code,create_time,create_user,description,
-      cover,is_top,sequence,group_id,images
+      cover,is_top,sequence,group_id,images,address,location,scale,situation,project_date
     )
     values (#{name,jdbcType=VARCHAR}, #{area,jdbcType=VARCHAR}, #{code,jdbcType=INTEGER},
     #{createTime,jdbcType=VARCHAR}, #{createUser,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR},
     #{cover,jdbcType=VARCHAR}, #{isTop,jdbcType=INTEGER}, #{sequence,jdbcType=INTEGER},
-    #{groupId,jdbcType=INTEGER},  #{images,jdbcType=VARCHAR}
+    #{groupId,jdbcType=INTEGER}, #{images,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR},
+    #{location,jdbcType=VARCHAR}, #{scale,jdbcType=VARCHAR},
+    #{situation,jdbcType=VARCHAR}, #{projectDate,jdbcType=VARCHAR}
     )
   </insert>
 </mapper>

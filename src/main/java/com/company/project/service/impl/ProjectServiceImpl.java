@@ -36,9 +36,14 @@ public class ProjectServiceImpl extends AbstractService<Project> implements Proj
     @Resource
     private AreaService areaService;
 
+    @Resource
+    private ProjectMapper projectMapper;
+
     @Override
     public void addProject(Project project) {
-        save(project);
+//        save(project);
+        //oracle需要这样加
+        projectMapper.insertProject(project);
     }
 
     @Override
